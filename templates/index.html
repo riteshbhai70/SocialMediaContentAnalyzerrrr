@@ -685,5 +685,26 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
     </script>
+
+    // Add this script to all pages
+document.addEventListener('DOMContentLoaded', function() {
+    // Check if mobile
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    if (isMobile) {
+        document.body.classList.add('mobile-device');
+        
+        // Mobile-specific adjustments
+        console.log('Mobile device detected');
+        
+        // Add loading states for slower mobile networks
+        const forms = document.querySelectorAll('form');
+        forms.forEach(form => {
+            form.addEventListener('submit', function() {
+                // Show mobile-optimized loading
+            });
+        });
+    }
+});
 </body>
 </html>
