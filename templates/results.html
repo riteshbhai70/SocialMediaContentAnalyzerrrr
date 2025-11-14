@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Analysis Results - Content Analyzer</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary: #4361ee;
+        --secondary: #3f37c9;
+        --success: #4cc9f0;
+        --warning: #f8961e;
+        --danger: #f94144;
+        --dark: #1d3557;
+        --light: #f8f9fa;
+        --gradient: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+      }
+
+      body {
+        font-family: "Inter", sans-serif;
+        background: #f8f9fa;
+        color: #333;
+      }
+
+      .navbar {
+        background: rgba(255, 255, 255, 0.95) !important;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      .navbar-brand {
+        font-weight: 700;
+        font-size: 1.5rem;
+        background: var(--gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .results-container {
+        padding: 100px 0 50px;
+        min-height: 100vh;
+      }
+
+      .main-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        border: none;
+        margin-bottom: 2rem;
+      }
+
+      .engagement-score {
+        font-size: 4rem;
+        font-weight: 800;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .score-excellent {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .score-good {
+        background: linear-gradient(135deg, #ffc107, #fd7e14);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .score-poor {
+        background: linear-gradient(135deg, #dc3545, #e83e8c);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .stat-card {
+        background: white;
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        margin-bottom: 1.5rem;
+        overflow: hidden;
+      }
+
+      .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+      }
+
+      .stat-card .card-header {
+        background: var(--gradient);
+        color: white;
+        border: none;
+        font-weight: 600;
+        padding: 1rem 1.5rem;
+      }
+
+      .suggestion-item {
+        border-left: 4px solid var(--primary);
+        background: #f8f9ff;
+        margin-bottom: 10px;
+        padding: 15px;
+        border-radius: 8px;
+      }
+
+      .hashtag-badge {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        font-size: 1rem;
+        padding: 10px 18px;
+        margin: 5px;
+        border-radius: 25px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        display: inline-block;
+      }
+
+      .hashtag-badge:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      }
+
+      .hashtag-badge.selected {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        transform: scale(1.05);
+      }
+
+      .hashtag-badge .checkmark {
+        display: none;
+        margin-left: 5px;
+      }
+
+      .hashtag-badge.selected .checkmark {
+        display: inline;
+      }
+
+      .copy-btn {
+        background: var(--gradient);
+        border: none;
+        border-radius: 25px;
+        padding: 12px 25px;
+        color: white;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .copy-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(67, 97, 238, 0.4);
+      }
+
+      .copy-btn.copied {
+        background: linear-gradient(135deg, #28a745, #20c997);
+      }
+
+      .sentiment-badge {
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: 600;
+      }
+
+      .toast {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1055;
+        border-radius: 10px;
+      }
+
+      .platform-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        text-align: center;
+        box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
+        transition: transform 0.3s ease;
+        height: 100%;
+      }
+
+      .platform-card:hover {
+        transform: translateY(-3px);
+      }
+
+      .platform-icon {
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+      }
+
+      .word-cloud-container {
+        background: white;
+        border-radius: 15px;
+        padding: 20px;
+        text-align: center;
+      }
+
+      .frequency-table {
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+      }
+
+      .frequency-table th {
+        background: var(--gradient);
+        color: white;
+        font-weight: 600;
+      }
+
+      .readability-score {
+        font-size: 2rem;
+        font-weight: 700;
+      }
+
+      .progress {
+        height: 8px;
+        border-radius: 10px;
+      }
+
+      .progress-bar {
+        background: var(--gradient);
+        border-radius: 10px;
+      }
+
+      .fade-in {
+        animation: fadeIn 0.6s ease-in;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .pulse {
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.05);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      .back-btn {
+        background: var(--gradient);
+        border: none;
+        border-radius: 50px;
+        padding: 10px 25px;
+        color: white;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .back-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(67, 97, 238, 0.4);
+        color: white;
+      }
+
+      .file-info {
+        background: #f8f9ff;
+        border-radius: 10px;
+        padding: 15px;
+        border-left: 4px solid var(--primary);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+      <div class="container">
+        <a class="navbar-brand" href="/">
+          <i class="fas fa-chart-line me-2"></i>ContentAnalyzer
+        </a>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link active fw-semibold" href="/">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link fw-semibold" href="/upload">Analyze</a>
+            </li>
+            <li></li>
+            <li class="nav-item">
+              <a class="nav-link fw-semibold" href="/trends">Trends</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link fw-semibold" href="#features">Features</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link fw-semibold" href="#how-it-works"
+                >How It Works</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Toast Notification -->
+    <div
+      class="toast align-items-center text-white bg-success border-0"
+      role="alert"
+      id="successToast"
+    >
+      <div class="d-flex">
+        <div class="toast-body">
+          <i class="fas fa-check-circle me-2"></i>
+          <span id="toastMessage">Hashtags copied to clipboard!</span>
+        </div>
+        <button
+          type="button"
+          class="btn-close btn-close-white me-2 m-auto"
+          data-bs-dismiss="toast"
+        ></button>
+      </div>
+    </div>
+
+    <div class="results-container">
+      <div class="container">
+        <!-- Header -->
+        <div
+          class="d-flex justify-content-between align-items-center mb-4 fade-in"
+        >
+          <div>
+            <h1 class="display-6 fw-bold">Analysis Results</h1>
+            <div class="file-info">
+              <p class="mb-1"><strong>File:</strong> {{ original_filename }}</p>
+              <p class="mb-0 text-muted">
+                <small>
+                  <i class="fas fa-clock me-1"></i>
+                  Processed: {{ filename.split('_')[0][:8] }} at {{
+                  filename.split('_')[0][8:10] }}:{{
+                  filename.split('_')[0][10:12] }}
+                </small>
+              </p>
+            </div>
+          </div>
+          <a href="/upload" class="btn back-btn">
+            <i class="fas fa-upload me-2"></i>Analyze Another File
+          </a>
+        </div>
+
+        <!-- Engagement Score -->
+        <div class="main-card fade-in">
+          <div class="card-body text-center py-5">
+            <h2 class="card-title mb-4">Engagement Score</h2>
+            {% set score_class = 'score-excellent' if results.engagement_score
+            >= 70 else 'score-good' if results.engagement_score >= 50 else
+            'score-poor' %}
+            <div class="engagement-score {{ score_class }} mb-3 pulse">
+              {{ results.engagement_score }}/100
+            </div>
+            <p class="lead fs-4">
+              {% if results.engagement_score >= 70 %}
+              <i class="fas fa-trophy text-warning me-2"></i>
+              Excellent! Your content has great engagement potential {% elif
+              results.engagement_score >= 50 %}
+              <i class="fas fa-thumbs-up text-info me-2"></i>
+              Good content with room for improvement {% else %}
+              <i class="fas fa-lightbulb text-warning me-2"></i>
+              Needs significant improvements for better engagement {% endif %}
+            </p>
+          </div>
+        </div>
+
+        <div class="row">
+          <!-- Statistics -->
+          <div class="col-lg-6">
+            <div class="stat-card fade-in">
+              <div class="card-header">
+                <i class="fas fa-chart-bar me-2"></i>Content Statistics
+              </div>
+              <div class="card-body">
+                <div class="row text-center">
+                  <div class="col-4 mb-3">
+                    <div class="border rounded p-3 bg-light">
+                      <div class="h2 text-primary">
+                        {{ results.word_count }}
+                      </div>
+                      <small class="text-muted">Words</small>
+                    </div>
+                  </div>
+                  <div class="col-4 mb-3">
+                    <div class="border rounded p-3 bg-light">
+                      <div class="h2 text-success">
+                        {{ results.sentence_count }}
+                      </div>
+                      <small class="text-muted">Sentences</small>
+                    </div>
+                  </div>
+                  <div class="col-4 mb-3">
+                    <div class="border rounded p-3 bg-light">
+                      <div class="h2 text-warning">
+                        {{ results.unique_words }}
+                      </div>
+                      <small class="text-muted">Unique Words</small>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mt-4">
+                  <h6>Sentiment Analysis</h6>
+                  {% set sentiment_color = 'bg-success' if
+                  results.sentiment_score > 0.1 else 'bg-warning' if
+                  results.sentiment_score >= -0.1 else 'bg-danger' %} {% set
+                  sentiment_text = 'Positive' if results.sentiment_score > 0.1
+                  else 'Neutral' if results.sentiment_score >= -0.1 else
+                  'Negative' %}
+                  <span
+                    class="sentiment-badge {{ sentiment_color }} text-white"
+                  >
+                    {{ "%.3f"|format(results.sentiment_score) }} ({{
+                    sentiment_text }})
+                  </span>
+                  <div class="progress mt-2">
+                    <div
+                      class="progress-bar"
+                      style="width: {{ (results.sentiment_score + 1) * 50 }}%"
+                    ></div>
+                  </div>
+                  <small class="text-muted"
+                    >Negative ← Neutral → Positive</small
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+          <!-- Hashtag Suggestions -->
+          <div class="col-lg-6">
+            <div class="stat-card fade-in">
+              <div class="card-header">
+                <i class="fas fa-hashtag me-2"></i>Recommended Hashtags
+              </div>
+              <div class="card-body">
+                <div class="mb-3">
+                  <div class="btn-group w-100" role="group">
+                    <button
+                      type="button"
+                      class="btn btn-outline-primary"
+                      id="selectAllHashtags"
+                    >
+                      <i class="fas fa-check-double me-2"></i>Select All
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-outline-secondary"
+                      id="deselectAllHashtags"
+                    >
+                      <i class="fas fa-times me-2"></i>Deselect All
+                    </button>
+                  </div>
+                </div>
+
+                <div class="text-center mb-3" id="hashtagsContainer">
+                  {% if results.recommended_hashtags %} {% for hashtag in
+                  results.recommended_hashtags %}
+                  <span class="hashtag-badge" data-hashtag="{{ hashtag }}">
+                    #{{ hashtag }}
+                    <span class="checkmark">✓</span>
+                  </span>
+                  {% endfor %} {% else %}
+                  <p class="text-muted">
+                    No hashtag suggestions available for this content
+                  </p>
+                  {% endif %}
+                </div>
+
+                <div class="text-center">
+                  <button class="btn copy-btn me-2" id="copySelectedBtn">
+                    <i class="fas fa-copy me-2"></i>Copy Selected
+                  </button>
+                  <button class="btn copy-btn" id="copyAllBtn">
+                    <i class="fas fa-copy me-2"></i>Copy All
+                  </button>
+                </div>
+
+                <div class="mt-3 text-center">
+                  <small class="text-muted">
+                    <i class="fas fa-mouse-pointer me-1"></i>
+                    Click on hashtags to select/deselect individual ones
+                  </small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Word Frequency Analysis -->
+        <div class="stat-card fade-in">
+          <div class="card-header">
+            <i class="fas fa-chart-bar me-2"></i>Word Frequency Analysis
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6">
+                <h6>Top 15 Most Frequent Words</h6>
+                <div class="table-responsive">
+                  <table class="table frequency-table">
+                    
+                  </table>
+                </div>
+              </div>
+              <div class="col-md-6">
+                {% if frequency_chart %}
+                <h6>Frequency Visualization</h6>
+                <img
+                  src="{{ frequency_chart }}"
+                  alt="Word Frequency Chart"
+                  class="img-fluid rounded"
+                />
+                {% endif %}
+              </div>
+
+
+
+              <thead>
+  <tr>
+    <th>Word</th>
+    <th>Frequency</th>
+  </tr>
+</thead>
+<tbody>
+  {% for word, count in zipped_data %}
+  <tr>
+    <td><strong>{{ word }}</strong></td>
+    <td><span class="badge bg-primary">{{ count }}</span></td>
+  </tr>
+  {% endfor %}
+</tbody>
+            </div>
+          </div>
+        </div>
+
+        <!-- Word Cloud & Content Classification -->
+        <div class="row">
+          {% if wordcloud_image %}
+          <div class="col-lg-6">
+            <div class="stat-card fade-in">
+              <div class="card-header">
+                <i class="fas fa-cloud me-2"></i>Word Cloud Visualization
+              </div>
+              <div class="card-body text-center">
+                <img
+                  src="{{ wordcloud_image }}"
+                  alt="Word Cloud"
+                  class="img-fluid rounded"
+                  style="max-height: 300px"
+                />
+                <p class="text-muted mt-2">
+                  Larger words appear more frequently in your content
+                </p>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+
+          <div class="col-lg-6">
+            <div class="stat-card fade-in">
+              <div class="card-header">
+                <i class="fas fa-tag me-2"></i>Content Classification
+              </div>
+              <div class="card-body">
+                <div class="text-center mb-4">
+                  <span class="badge bg-success fs-5 p-3"
+                    >{{ content_category }}</span
+                  >
+                  <div class="mt-2">
+                    <small class="text-muted"
+                      >Confidence: {{ category_confidence }}%</small
+                    >
+                  </div>
+                </div>
+
+                <h6>Readability Scores</h6>
+                <div class="row">
+                  <div class="col-6 mb-3">
+                    <small>Flesch Reading Ease</small>
+                    <div class="readability-score text-primary">
+                      {{
+                      "%.0f"|format(advanced_analysis.get('flesch_reading_ease',
+                      0)) }}
+                    </div>
+                    <div class="progress mb-2">
+                      <div
+                        class="progress-bar"
+                        style="width: {{ advanced_analysis.get('flesch_reading_ease', 0) }}%"
+                      ></div>
+                    </div>
+                    <small class="text-muted">0-100 scale</small>
+                  </div>
+                  <div class="col-6 mb-3">
+                    <small>Grade Level</small>
+                    <div class="readability-score text-info">
+                      {{
+                      "%.1f"|format(advanced_analysis.get('flesch_kincaid_grade',
+                      0)) }}
+                    </div>
+                    <div class="progress mb-2">
+                      <div
+                        class="progress-bar bg-info"
+                        style="width: {{ (advanced_analysis.get('flesch_kincaid_grade', 0) / 12) * 100 }}%"
+                      ></div>
+                    </div>
+                    <small class="text-muted">U.S. school grade</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Platform Optimization -->
+        <div class="stat-card fade-in">
+          <div class="card-header">
+            <i class="fas fa-share-alt me-2"></i>Platform Optimization
+          </div>
+          <div class="card-body">
+            <div class="row">
+              {% for platform, data in platform_analysis.items() %}
+              <div class="col-lg-3 col-md-6 mb-3">
+                <div class="platform-card">
+                  <i
+                    class="fab fa-{{ data.icon }} platform-icon"
+                    style="color: {{ data.color }}"
+                  ></i>
+                  <h6>{{ platform }}</h6>
+                  <div class="h4 fw-bold mb-2">
+                    {{ "%.0f"|format(data.score) }}/100
+                  </div>
+                  <span
+                    class="badge bg-{{ 'success' if data.status in ['Perfect', 'Great', 'Optimal'] else 'warning' if data.status == 'Good' else 'danger' }} mb-2"
+                  >
+                    {{ data.status }}
+                  </span>
+                  <p class="small text-muted mb-0">{{ data.suggestion }}</p>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+
+            <div class="mt-4">
+              <h6>Optimal Posting Times</h6>
+              <div class="row">
+                {% for platform, times in optimal_times.items() %}
+                <div class="col-lg-3 col-md-6 mb-3">
+                  <div class="card h-100">
+                    <div class="card-body">
+                      <h6 class="card-title">
+                        <i
+                          class="fab fa-{{ platform_analysis[platform].icon }} me-2"
+                          style="color: {{ platform_analysis[platform].color }}"
+                        ></i>
+                        {{ platform }}
+                      </h6>
+                      <ul class="list-unstyled mb-0">
+                        {% for time in times %}
+                        <li><small class="text-muted">{{ time }}</small></li>
+                        {% endfor %}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Improvement Suggestions -->
+        <div class="stat-card fade-in">
+          <div class="card-header">
+            <i class="fas fa-lightbulb me-2"></i>Engagement Improvement
+            Suggestions
+          </div>
+          <div class="card-body">
+            {% if results.suggestions %}
+            <div class="row">
+              {% for suggestion in results.suggestions %}
+              <div class="col-lg-6 mb-3">
+                <div class="suggestion-item">
+                  <i class="fas fa-check-circle text-success me-2"></i>
+                  {{ suggestion }}
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-muted">
+              No specific suggestions available for this content
+            </p>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Extracted Text Preview -->
+        <div class="stat-card fade-in">
+          <div class="card-header">
+            <i class="fas fa-file-text me-2"></i>Extracted Text Preview
+          </div>
+          <div class="card-body">
+            <div
+              class="border rounded p-4 bg-light"
+              style="max-height: 400px; overflow-y: auto"
+            >
+              <p style="white-space: pre-wrap; line-height: 1.6">
+                {{ text_preview }}
+              </p>
+            </div>
+            <div class="mt-3 d-flex justify-content-between align-items-center">
+              <small class="text-muted">
+                <i class="fas fa-file me-1"></i>{{ original_filename }}
+                <span class="ms-3"
+                  ><i class="fas fa-ruler me-1"></i>{{ extracted_text_length }}
+                  characters</span
+                >
+              </small>
+              <button
+                onclick="copyText()"
+                class="btn btn-sm btn-outline-primary"
+              >
+                <i class="fas fa-copy me-1"></i>Copy Text
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="text-center mt-5 fade-in">
+          <a href="/upload" class="btn back-btn me-3">
+            <i class="fas fa-redo me-2"></i>Analyze Another File
+          </a>
+          <button
+            onclick="window.print()"
+            class="btn btn-outline-secondary me-3"
+          >
+            <i class="fas fa-print me-2"></i>Print Results
+          </button>
+          <button class="btn btn-success" onclick="shareResults()">
+            <i class="fas fa-share-alt me-2"></i>Share Results
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      // DOM Elements
+      const hashtagBadges = document.querySelectorAll('.hashtag-badge');
+      const selectAllBtn = document.getElementById('selectAllHashtags');
+      const deselectAllBtn = document.getElementById('deselectAllHashtags');
+      const copySelectedBtn = document.getElementById('copySelectedBtn');
+      const copyAllBtn = document.getElementById('copyAllBtn');
+      const successToast = new bootstrap.Toast(document.getElementById('successToast'));
+      const toastMessage = document.getElementById('toastMessage');
+
+      // Select/Deselect individual hashtags
+      hashtagBadges.forEach(badge => {
+          badge.addEventListener('click', function() {
+              this.classList.toggle('selected');
+          });
+      });
+
+      // Select All Hashtags
+      selectAllBtn.addEventListener('click', function() {
+          hashtagBadges.forEach(badge => {
+              badge.classList.add('selected');
+          });
+      });
+
+      // Deselect All Hashtags
+      deselectAllBtn.addEventListener('click', function() {
+          hashtagBadges.forEach(badge => {
+              badge.classList.remove('selected');
+          });
+      });
+
+      // Copy Selected Hashtags
+      copySelectedBtn.addEventListener('click', async function() {
+          const selectedHashtags = Array.from(hashtagBadges)
+              .filter(badge => badge.classList.contains('selected'))
+              .map(badge => badge.getAttribute('data-hashtag'));
+
+          if (selectedHashtags.length === 0) {
+              showToast('Please select at least one hashtag to copy', 'warning');
+              return;
+          }
+
+          await copyHashtagsToClipboard(selectedHashtags);
+          this.classList.add('copied');
+          setTimeout(() => this.classList.remove('copied'), 2000);
+      });
+
+      // Copy All Hashtags
+      copyAllBtn.addEventListener('click', async function() {
+          const allHashtags = Array.from(hashtagBadges)
+              .map(badge => badge.getAttribute('data-hashtag'));
+
+          if (allHashtags.length === 0) {
+              showToast('No hashtags available to copy', 'warning');
+              return;
+          }
+
+          await copyHashtagsToClipboard(allHashtags);
+          this.classList.add('copied');
+          setTimeout(() => this.classList.remove('copied'), 2000);
+      });
+
+      // Copy hashtags to clipboard
+      async function copyHashtagsToClipboard(hashtags) {
+          const hashtagsText = hashtags.map(tag => `#${tag}`).join(' ');
+
+          try {
+              if (navigator.clipboard && window.isSecureContext) {
+                  await navigator.clipboard.writeText(hashtagsText);
+              } else {
+                  const textArea = document.createElement('textarea');
+                  textArea.value = hashtagsText;
+                  textArea.style.position = 'fixed';
+                  textArea.style.left = '-999999px';
+                  textArea.style.top = '-999999px';
+                  document.body.appendChild(textArea);
+                  textArea.focus();
+                  textArea.select();
+                  document.execCommand('copy');
+                  document.body.removeChild(textArea);
+              }
+
+              showToast(`Copied ${hashtags.length} hashtags to clipboard!`, 'success');
+          } catch (err) {
+              console.error('Failed to copy hashtags:', err);
+              showToast('Failed to copy hashtags. Please try again.', 'error');
+          }
+      }
+
+      // Copy extracted text
+      async function copyText() {
+          const text = `{{ text_preview }}`;
+
+          try {
+              if (navigator.clipboard && window.isSecureContext) {
+                  await navigator.clipboard.writeText(text);
+                  showToast('Text copied to clipboard!', 'success');
+              } else {
+                  const textArea = document.createElement('textarea');
+                  textArea.value = text;
+                  document.body.appendChild(textArea);
+                  textArea.select();
+                  document.execCommand('copy');
+                  document.body.removeChild(textArea);
+                  showToast('Text copied to clipboard!', 'success');
+              }
+          } catch (err) {
+              console.error('Failed to copy text:', err);
+              showToast('Failed to copy text. Please try again.', 'error');
+          }
+      }
+
+      // Show toast notification
+      function showToast(message, type = 'success') {
+          toastMessage.textContent = message;
+
+          const toastElement = document.getElementById('successToast');
+          if (type === 'success') {
+              toastElement.classList.remove('bg-warning', 'bg-danger');
+              toastElement.classList.add('bg-success');
+          } else if (type === 'warning') {
+              toastElement.classList.remove('bg-success', 'bg-danger');
+              toastElement.classList.add('bg-warning');
+          } else if (type === 'error') {
+              toastElement.classList.remove('bg-success', 'bg-warning');
+              toastElement.classList.add('bg-danger');
+          }
+
+          successToast.show();
+      }
+
+      // Share results function
+      function shareResults() {
+          const engagementScore = {{ results.engagement_score }};
+          const scoreText = engagementScore >= 70 ? 'Excellent' : engagementScore >= 50 ? 'Good' : 'Needs Improvement';
+
+          const shareText = `My content got an engagement score of ${engagementScore}/100 (${scoreText})! Analyzed using Content Analyzer.`;
+
+          if (navigator.share) {
+              navigator.share({
+                  title: 'Content Analysis Results',
+                  text: shareText,
+                  url: window.location.href
+              });
+          } else {
+              copyHashtagsToClipboard([`Engagement Score: ${engagementScore}/100 - ${scoreText}`]);
+          }
+      }
+
+      // Add animation to cards when they come into view
+      document.addEventListener('DOMContentLoaded', function() {
+          const cards = document.querySelectorAll('.stat-card, .main-card');
+          cards.forEach((card, index) => {
+              card.style.opacity = '0';
+              card.style.transform = 'translateY(20px)';
+
+              setTimeout(() => {
+                  card.style.transition = 'all 0.6s ease';
+                  card.style.opacity = '1';
+                  card.style.transform = 'translateY(0)';
+              }, index * 200);
+          });
+      });
+    </script>
+  </body>
+</html>

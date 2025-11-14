@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trending Topics - Content Analyzer</title>
+
+  <!-- Dependencies -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #4361ee;
+      --secondary: #3f37c9;
+      --gradient: linear-gradient(135deg, #4361ee, #3a0ca3);
+      --light-bg: #f8f9fa;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--light-bg);
+      overflow-x: hidden;
+    }
+
+    /* Navbar */
+    .navbar {
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .navbar-brand {
+      font-weight: 700;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.5px;
+    }
+
+    .nav-link {
+      color: #333 !important;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      color: var(--primary) !important;
+    }
+
+    /* Header */
+    .trends-container {
+      padding: 110px 0 60px;
+      min-height: 100vh;
+    }
+
+    .display-5 {
+      font-weight: 700;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Platform Cards */
+    .platform-card {
+      border: none;
+      border-radius: 18px;
+      background: #fff;
+      box-shadow: 0 5px 25px rgba(0,0,0,0.08);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .platform-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 10px 35px rgba(0,0,0,0.12);
+    }
+
+    .card-header {
+      border-bottom: none;
+      background: white;
+      padding: 1.2rem 1.5rem;
+    }
+
+    .card-body {
+      padding: 1.25rem 1.5rem 1.5rem;
+    }
+
+    /* Trend items */
+    .trend-item {
+      background: #f8f9ff;
+      border-left: 4px solid var(--primary);
+      border-radius: 10px;
+      padding: 12px 15px;
+      margin-bottom: 10px;
+      transition: all 0.25s ease;
+    }
+
+    .trend-item:hover {
+      background: #eef2ff;
+      transform: translateX(4px);
+    }
+
+    .trend-rank {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--gradient);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+
+    .last-updated {
+      background: #e9ecef;
+      border-radius: 20px;
+      padding: 5px 15px;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .refresh-btn {
+      background: var(--gradient);
+      color: #fff;
+      border: none;
+      border-radius: 25px;
+      padding: 10px 22px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .refresh-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(67,97,238,0.4);
+    }
+
+    /* Tips Section */
+    .tips-card {
+      border-radius: 16px;
+      border: none;
+      box-shadow: 0 6px 25px rgba(0,0,0,0.05);
+      background: white;
+      transition: all 0.3s ease;
+    }
+
+    .tips-card:hover {
+      transform: translateY(-4px);
+    }
+
+    /* Toast */
+    #successToast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      min-width: 260px;
+      background: rgba(50,50,50,0.9);
+      color: white;
+      border-radius: 10px;
+      backdrop-filter: blur(6px);
+      z-index: 2000;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="/">
+        <i class="fas fa-chart-line me-2"></i>ContentAnalyzer
+      </a>
+      <div class="navbar-nav ms-auto">
+        <a class="nav-link" href="/">Home</a>
+        <a class="nav-link" href="/upload">Analyze</a>
+        <a class="nav-link active fw-semibold" href="/trends">Trends</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main -->
+  <div class="trends-container">
+    <div class="container">
+      <!-- Header -->
+      <div class="text-center mb-5">
+        <h1 class="display-5 mb-3">Today's Trending Topics</h1>
+        <p class="lead text-muted mb-4">Stay ahead of the curve by tracking real-time social media trends</p>
+        <div class="d-flex justify-content-center align-items-center gap-3 flex-wrap">
+          <span class="last-updated">
+            <i class="fas fa-sync-alt me-1"></i>
+            Last updated: <span id="lastUpdated">Just now</span>
+          </span>
+          <button class="refresh-btn" onclick="refreshTrends()">
+            <i class="fas fa-redo me-2"></i>Refresh Trends
+          </button>
+        </div>
+      </div>
+
+      <!-- Trending Platforms -->
+      <div id="trendsContainer">
+        <div class="row">
+          {% for platform, data in trending_searches.items() %}
+          <div class="col-lg-6 mb-4">
+            <div class="platform-card">
+              <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div class="d-flex align-items-center">
+                    <i class="fab fa-{{ data.icon }} fa-2x me-3" style="color: {{ data.color }}"></i>
+                    <div>
+                      <h5 class="fw-bold mb-0">{{ data.name }}</h5>
+                      <small class="text-muted">Top 5 trending topics</small>
+                    </div>
+                  </div>
+                  <button class="btn btn-sm btn-outline-primary" onclick="copyAllTrends('{{ platform }}')">
+                    <i class="fas fa-copy me-1"></i>Copy All
+                  </button>
+                </div>
+              </div>
+              <div class="card-body">
+                {% for trend in data.trends %}
+                <div class="trend-item d-flex justify-content-between align-items-center">
+                  <div class="d-flex align-items-center">
+                    <div class="trend-rank me-3">{{ loop.index }}</div>
+                    <span class="fw-semibold">{{ trend }}</span>
+                  </div>
+                  <button class="btn btn-sm btn-outline-secondary" onclick="copyTrend('{{ trend }}')">
+                    <i class="fas fa-copy fa-xs"></i>
+                  </button>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Tips -->
+      <div class="row mt-5">
+        <div class="col-lg-8 mx-auto">
+          <div class="card tips-card text-center p-4">
+            <h5 class="fw-bold mb-3"><i class="fas fa-lightbulb me-2 text-warning"></i>How to Use Trending Topics</h5>
+            <div class="row text-start justify-content-center">
+              <div class="col-md-4 mb-3">
+                <div class="d-flex align-items-start">
+                  <span class="badge bg-primary me-2">1</span>
+                  <small>Incorporate relevant trends into your next post.</small>
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <div class="d-flex align-items-start">
+                  <span class="badge bg-primary me-2">2</span>
+                  <small>Use trending hashtags to boost engagement.</small>
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <div class="d-flex align-items-start">
+                  <span class="badge bg-primary me-2">3</span>
+                  <small>Tailor your content around the most discussed topics.</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast align-items-center text-white bg-success border-0" id="successToast" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+      <div class="toast-body" id="toastMessage">Copied!</div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const toast = new bootstrap.Toast(document.getElementById('successToast'));
+
+    function copyTrend(trend) {
+      navigator.clipboard.writeText(trend).then(() => {
+        showToast(`"${trend}" copied to clipboard!`);
+      });
+    }
+
+    function copyAllTrends(platform) {
+      const trends = {{ trending_searches|tojson }};
+      const list = trends[platform].trends.join(', ');
+      navigator.clipboard.writeText(list).then(() => {
+        showToast(`All ${trends[platform].name} trends copied!`);
+      });
+    }
+
+    function refreshTrends() {
+      const btn = event.target;
+      const original = btn.innerHTML;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Refreshing...';
+      btn.disabled = true;
+
+      // Simply reload the page to get fresh data
+      setTimeout(() => {
+        location.reload();
+      }, 1000);
+    }
+
+    function showToast(message, type = 'success') {
+      const toastElement = document.getElementById('successToast');
+      const toastMessage = document.getElementById('toastMessage');
+      toastMessage.textContent = message;
+
+      if (type === 'error') {
+        toastElement.classList.remove('bg-success');
+        toastElement.classList.add('bg-danger');
+      } else {
+        toastElement.classList.remove('bg-danger');
+        toastElement.classList.add('bg-success');
+      }
+
+      toast.show();
+    }
+
+    // Auto-refresh every 30 min
+    setInterval(() => {
+      document.getElementById('lastUpdated').textContent = new Date().toLocaleTimeString();
+      showToast('Trends auto-refreshed!');
+    }, 30 * 60 * 1000);
+  </script>
+</body>
+</html>
