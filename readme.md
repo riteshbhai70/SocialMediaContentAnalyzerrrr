@@ -1,189 +1,199 @@
 # Social Media Content Analyzer
-
 ![Banner](./snapshoots/image1.png)
+
 
 ### Demo Video
 Watch the working demo of **Social Media Content Analyzer** here:  
 [![Watch Demo Video](https://img.shields.io/badge/Watch-Demo%20Video-blue?logo=loom)](https://www.loom.com/share/0ca46d1c195e4aeb941f8b538aeda69d)
 
+Powerful AI-driven tool to analyze text extracted from PDFs & Images, providing engagement score, sentiment analysis, readability metrics, word cloud, trending topics, platform-wise optimization, hashtags & more.
 
----
+🔗 Live Demo (Render):
+👉 https://socialmediacontentanalyzerrrr.onrender.com/
 
-## 🚀 Project Overview
+⚠️ Render takes 1–2 minutes to load the first time (cold start). Please wait.
 
-**Social Media Content Analyzer** is a modern web-based tool designed to help content creators, marketers, and businesses analyze and improve the effectiveness of their social media posts.
+📌 Features
 
-It allows users to upload text-based content in **PDFs or images**, extract the text using **OCR (Optical Character Recognition)**, and perform **advanced content analysis**, including:
+✔ Extract text from PDF, PNG, JPG, JPEG
+✔ OCR support via OCR.Space API
+✔ Engagement analysis (score, sentiment, readability, structure, keywords)
+✔ Word frequency graph & Word Cloud
+✔ Social media platform-wise analysis: Twitter, Instagram, Facebook, LinkedIn
+✔ Automatic Hashtag Generation
+✔ Category detection (Tech, Business, Lifestyle, Education, etc.)
+✔ Trending topics (Twitter, Google, Instagram, LinkedIn – mock data)
+✔ Clean modern UI with responsive templates
+✔ Fully database-free, easy to deploy on Render
+✔ Temporary storage using tempfile (safe, auto-cleanup)
 
-- **Engagement Analysis** – Sentiment, word count, unique words, actionable suggestions.
-- **Readability Scores** – Flesch Reading Ease, Flesch-Kincaid Grade, SMOG Index.
-- **Content Categorization** – Classifies content into Technology, Business, Lifestyle, Education, Entertainment, News, or General.
-- **Platform-specific Recommendations** – Optimized suggestions for Twitter, Instagram, Facebook, LinkedIn.
-- **Trending Topics & Hashtags** – Shows current trends and suggests relevant hashtags.
-- **Word Frequency & Word Cloud Visualization** – Identify most-used words visually.
+📁 Project Structure
+SocialMediaContentAnalyzerrrr/
+│── app.py
+│── requirements.txt
+│── templates/
+│     ├── index.html
+│     ├── upload.html
+│     ├── results.html
+│     └── trends.html
+│── static/
+│     ├── css/
+│     ├── js/
+│     └── assets/
+│── README.md
+│── .env (optional - SECRET_KEY)
 
-**Why use this project?**  
-Social media success depends on engagement and reach. This tool automates content analysis, giving actionable insights to boost post visibility and effectiveness.
+🚀 Live Demo
 
----
+🔗 https://socialmediacontentanalyzerrrr.onrender.com/
 
-## 🛠 Features
+⚠️ Takes 1–2 min on first load due to Render free tier.
 
-- Upload PDF or image files and extract text using OCR.
-- Generate engagement score and actionable improvement suggestions.
-- Platform-specific content analysis (Twitter, Instagram, Facebook, LinkedIn).
-- Generate word frequency charts and word clouds.
-- Automatic content categorization with confidence scores.
-- Fetch trending searches from social platforms and Google.
-- Store and manage uploaded documents and analysis results in MySQL.
-- Interactive and user-friendly dashboard for analytics.
+🛠️ Tech Stack
 
----
+Python (Flask)
 
-## 🎯 Benefits
+HTML, CSS, JavaScript
 
-- **Content Creators & Marketers:** Know what type of content resonates most.
-- **Businesses & Startups:** Improve social media presence and strategy.
-- **Students & Researchers:** Analyze readability, sentiment, and engagement patterns.
+OCR.Space API
 
----
+NLTK
 
-## 🧰 Prerequisites
+TextBlob
 
-- **Python 3.11+**
-- **MySQL Server**
-- **Tesseract OCR**
+Matplotlib
 
-### 🔗 Tesseract OCR Download & Setup
+WordCloud
 
-**1. Download and install Tesseract OCR:** [Tesseract OCR Download](https://github.com/UB-Mannheim/tesseract/wiki)  
+NumPy
 
-**2. Add Tesseract installation path to your system environment variable**(PATH).  
-   Example (Windows default):  
-C:\Program Files\Tesseract-OCR\
+tempfile + shutil for secure file handling
 
-go
+🧠 Core Functionalities Overview
+🔍 1. Text Extraction
 
-**3. Test installation:**
-```bash
-tesseract --version
-📥 Project Setup
+PDF → PyPDF2
+
+Images → OCR.Space API
+
+📊 2. Engagement Analysis
+
+Includes:
+
+Sentiment score
+
+Word count, sentence count
+
+Unique words
+
+Engagement Score (0–100)
+
+Auto suggestions to improve content
+
+🌀 3. Word Cloud + Word Frequency Chart
+
+High-quality PNG generated using Matplotlib & WordCloud
+
+📚 4. Advanced Analytics
+
+Flesch Reading Ease
+
+SMOG Index
+
+Coleman-Liau Index
+
+Average sentence length
+
+Lexical diversity
+
+Much more…
+
+🏷️ 5. Hashtag Generation
+
+Based on:
+
+Topic
+
+Keywords
+
+Category detection
+
+📈 6. Social Media Platform Breakdown
+
+Each platform includes:
+
+Ideal post length
+
+Post score
+
+Suggestions
+
+Visual indicators
+
+📦 Installation (Local Setup)
 1. Clone the repository
-bash
+git clone https://github.com/riteshbhai70/SocialMediaContentAnalyzerrrr.git
+cd SocialMediaContentAnalyzerrrr
 
-git clone https://github.com/riteshbhai70/SocialMediaContentAnalyzer.git
-cd SocialMediaContentAnalyzer
-2. Create a virtual environment and activate it
-bash
+2. Install dependencies
+pip install -r requirements.txt
 
-python -m venv venv
+3. (Optional) Add .env
+SECRET_KEY=your_secret_key
 
-# Windows
-venv\Scripts\activate
+4. Run the App
+python app.py
 
-# Linux / Mac
-source venv/bin/activate
-3. Install dependencies
-bash
+
+Access at:
+➡ http://localhost:5000
+
+☁️ Deploy on Render (Free)
+
+Already deployed here:
+👉 https://socialmediacontentanalyzerrrr.onrender.com/
+
+To deploy yourself:
+
+Connect GitHub repo
+
+Select Build Command:
 
 pip install -r requirements.txt
 
-**4. Configure environment variables**
-Create a .env file in the root directory with:
 
-env
+Start Command:
 
-SECRET_KEY=your-super-secret-key
-DB_HOST=localhost
-DB_USER=root
-DB_PASSWORD=your-db-password
-DB_NAME=content_analyzer
-UPLOAD_FOLDER=static/uploads
-MAX_CONTENT_LENGTH=16777216
-
-**5. Create the database and tables**
-bash
-
-python db_setup.py
-6. Run the application
-bash
-
-python app.py
-Open in browser: http://localhost:5000
-
-🖼️ Screenshots / GIFs
-Dashboard
-
-Upload Page
-
-Analysis Results
-
-Word Cloud & Frequency Chart
+gunicorn app:app
 
 
-Demo Video
+Add environment variable:
 
-📝 How to Use
-Go to the Upload Page.
-
-Upload a PDF or image containing your social media content.
-
-Click Analyze to generate:
-
-Engagement score
-
-Sentiment analysis
-
-Suggested improvements
-
-Hashtags and trending topics
-
-Word cloud & frequency chart
-
-Review the results and implement recommendations to improve your posts.
-
-⚠️ Notes
-Supported file types: PDF, PNG, JPG, JPEG, GIF
-
-Maximum file size: 16 MB (configurable in .env)
-
-Ensure Tesseract OCR is installed and added to PATH for proper text extraction.
-
-📦 Folder Structure
-arduino
-
-SocialMediaContentAnalyzer/
-│
-├─ app.py
-├─ config.py
-├─ db_setup.py
-├─ requirements.txt
-├─ .env
-├─ templates/
-│   ├─ index.html
-│   ├─ upload.html
-│   ├─ results.html
-│   └─ trends.html
-├─ static/
-│   ├─ css/
-│   ├─ js/
-│   ├─ uploads/
-│   └─ assets/    # images, screenshots, demo thumbnail
-🤝 Credits
-This project is open for personal and educational use.
-
-If you use it in your projects or demos, please give credit:
+SECRET_KEY = your_key
 
 
-Social Media Content Analyzer by RITESH KUMAR
-GitHub: https://github.com/riteshbhai70/SocialMediaContentAnalyzer
-📌 License
-MIT License
 
-**💡 Future Enhancements**
-User authentication & multi-user support.
 
-Real-time social media API integration for trending topics.
+👨‍💻 Developed By
+
+Ritesh Kumar
+🌐 GitHub: https://github.com/riteshbhai70
+
+💼 Portfolio (if any): Add here
+📧 Email: 
+
+⭐ Support This Project
+
+If this project helped you, please 💙 star the repository!
+
+👉 Star Now:
+https://github.com/riteshbhai70/SocialMediaContentAnalyzerrrr
+ ⭐
+
+📜 License
+
+This project is licensed under the MIT License – free to use, modify, and distribute.
+
 
 AI-powered content suggestions using GPT models.
 
